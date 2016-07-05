@@ -4,3 +4,9 @@ version = "0.1.0"
 authors = ["J/A <archer884@gmail.com>"]
 
 [dependencies]
+dotenv = "*"
+dotenv_macros = "*"
+postgres = "*"
+r2d2 = "*"
+r2d2_postgres = "*"
+serde = "*"
