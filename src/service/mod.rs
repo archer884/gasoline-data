@@ -75,9 +75,6 @@ impl<'a> IntoModel<'a> for Rows<'a> {
     }
     
     fn multiple<T: From<Row<'a>>>(&'a self) -> Vec<T> {
-        if self.is_empty() {
-            return vec![]
-        }
         self.iter().map(Row::into).collect()
     }
 }
