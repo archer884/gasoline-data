@@ -2,6 +2,7 @@ use entity::{Fillup, CreateFillup};
 use service::{IntoModel, Page, ServiceConnection, ServiceResult};
 
 pub trait FillupService {
+    fn create<T: CreateFillup>(&self, fillup: T) -> ServiceResult<u64>;
     fn by_id(&self, id: i64) -> ServiceResult<Fillup>;
     fn by_user(&self, user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>>;
     fn by_vehicle(&self, user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>>;
@@ -20,6 +21,16 @@ impl PgFillupService {
 }
 
 impl FillupService for PgFillupService {
+    fn create<T: CreateFillup>(&self, fillup: T) -> ServiceResult<u64> {
+        let sql = include_str!("../../sql/fillup/create.sql");
+        Ok(self.connection.execute(sql, &[
+            &fillup.user_id(),
+            &fillup.vehicle_id(),
+            &fillup.cost(),
+            &fillup.qty(),
+        ])?)
+    }
+    
     fn by_id(&self, id: i64) -> ServiceResult<Fillup> {
         let sql = include_str!("../../sql/fillup/by_id.sql");
         self.connection.query(sql, &[&id])?.single()

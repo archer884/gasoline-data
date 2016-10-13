@@ -5,8 +5,5 @@ extern crate postgres;
 extern crate r2d2;
 extern crate r2d2_postgres;
 
-mod entity;
-mod service;
-
-pub use entity::*;
-pub use service::*;
+pub mod entity;
+pub mod service;
