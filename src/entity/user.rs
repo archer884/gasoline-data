@@ -12,7 +12,10 @@ pub trait CreateUser {
     fn hash(&self) -> &str;
 }
 
-impl<'a, T: AsRef<str> + 'a> CreateUser for (T, T) {
+impl<'a, T1, T2> CreateUser for (T1, T2)
+    where T1: AsRef<str> + 'a,
+          T2: AsRef<str> + 'a,
+{
     fn username(&self) -> &str {
         self.0.as_ref()
     }
