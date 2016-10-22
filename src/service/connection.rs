@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use iron::typemap;
 use r2d2_postgres::TlsMode;
 use r2d2::{Config, Pool};
 use service::*;
@@ -6,6 +7,10 @@ use std::env;
 
 pub struct PgConnectionService {
     pool: Pool<ConnectionManager>,
+}
+
+impl typemap::Key for PgConnectionService {
+    type Value = PgConnectionService;
 }
 
 impl PgConnectionService {
