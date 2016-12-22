@@ -1,4 +1,4 @@
-#![feature(box_syntax, question_mark)]
+#![feature(box_syntax)]
 
 extern crate dotenv;
 extern crate iron;
