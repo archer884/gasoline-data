@@ -2,7 +2,6 @@ use diesel::pg::PgConnection;
 use std::env;
 use dotenv::dotenv;
 use iron::typemap;
-use r2d2_postgres::TlsMode;
 use r2d2::{Config, Pool};
 use service::{ConnectionManager, ServiceConnection, UserService, VehicleService, FillupService};
 
@@ -42,5 +41,5 @@ impl ConnectionService {
 }
 
 impl typemap::Key for ConnectionService {
-    type Value = PgConnectionService;
+    type Value = ConnectionService;
 }
