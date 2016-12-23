@@ -1,59 +1,46 @@
+use diesel::pg::PgConnection;
+use std::env;
 use dotenv::dotenv;
 use iron::typemap;
 use r2d2_postgres::TlsMode;
 use r2d2::{Config, Pool};
-use service::*;
-use std::env;
+use service::{ConnectionManager, ServiceConnection, UserService, VehicleService, FillupService};
 
-pub struct PgConnectionService {
-    pool: Pool<ConnectionManager>,
+pub struct ConnectionService {
+    pool: Pool<ConnectionManager<PgConnection>>,
 }
 
-impl typemap::Key for PgConnectionService {
-    type Value = PgConnectionService;
-}
-
-impl PgConnectionService {
-    pub fn new() -> PgConnectionService {
+impl ConnectionService {
+    pub fn new() -> ConnectionService {
         dotenv().ok();
 
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
         let pool = Pool::new(
             Config::default(),
-            ConnectionManager::new(database_url.as_ref(), TlsMode::None).expect(
-                "Unable to create connection manager"
-            ),
+            ConnectionManager::new(database_url.as_ref()),
         ).expect("failed to initialize pool");
 
-        PgConnectionService { pool: pool }
+        ConnectionService { pool: pool }
+    }
+
+    pub fn users(&mut self) -> UserService {
+        UserService::new(self.get_connection())
+    }
+
+    pub fn vehicles(&mut self) -> VehicleService {
+        VehicleService::new(self.get_connection())
+    }
+
+    pub fn fillups(&mut self) -> FillupService {
+        FillupService::new(self.get_connection())
+    }
+
+    fn get_connection(&mut self) -> ServiceConnection {
+        self.pool.get().expect("unable to get connection")
     }
 }
 
-pub trait ConnectionService {
-    type UserService: UserService;
-    type VehicleService: VehicleService;
-    type FillupService: FillupService;
-
-    fn users(&mut self) -> Self::UserService;
-    fn vehicles(&mut self) -> Self::VehicleService;
-    fn fillups(&mut self) -> Self::FillupService;
-}
-
-impl ConnectionService for PgConnectionService {
-    type UserService = PgUserService;
-    type VehicleService = PgVehicleService;
-    type FillupService = PgFillupService;
-
-    fn users(&mut self) -> Self::UserService {
-        PgUserService::new(self.pool.get().expect("unable to get connection"))
-    }
-
-    fn vehicles(&mut self) -> Self::VehicleService {
-        PgVehicleService::new(self.pool.get().expect("unable to get connection"))
-    }
-
-    fn fillups(&mut self) -> Self::FillupService {
-        PgFillupService::new(self.pool.get().expect("unable to get connection"))
-    }
+impl typemap::Key for ConnectionService {
+    type Value = PgConnectionService;
 }

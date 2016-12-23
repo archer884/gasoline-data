@@ -1,48 +1,36 @@
-use entity::{Fillup, CreateFillup};
+use diesel::prelude::*;
+use entity::Fillup;
+use schema::fillup::dsl::*;
 use service::{IntoModel, Page, ServiceConnection, ServiceResult};
 
-pub trait FillupService {
-    fn create<T: CreateFillup>(&self, fillup: T) -> ServiceResult<u64>;
-    fn by_id(&self, id: i64) -> ServiceResult<Fillup>;
-    fn by_user(&self, user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>>;
-    fn by_vehicle(&self, user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>>;
-}
-
-pub struct PgFillupService {
+pub struct FillupService {
     connection: ServiceConnection
 }
 
-impl PgFillupService {
-    pub fn new(connection: ServiceConnection) -> PgFillupService {
-        PgFillupService {
+impl FillupService {
+    pub fn new(connection: ServiceConnection) -> FillupService {
+        FillupService {
             connection: connection
         }
     }
-}
 
-impl FillupService for PgFillupService {
-    fn create<T: CreateFillup>(&self, fillup: T) -> ServiceResult<u64> {
-        let sql = include_str!("../../sql/fillup/create.sql");
-        Ok(self.connection.execute(sql, &[
-            &fillup.user_id(),
-            &fillup.vehicle_id(),
-            &fillup.cost(),
-            &fillup.qty(),
-        ])?)
-    }
-    
-    fn by_id(&self, id: i64) -> ServiceResult<Fillup> {
-        let sql = include_str!("../../sql/fillup/by_id.sql");
-        self.connection.query(sql, &[&id])?.single()
+    pub fn by_id(&self, target_id: i64) -> ServiceResult<Fillup> {
+        fillup.filter(id.eq(target_id)).limit(1).load(&*self.connection).single()
     }
 
-    fn by_user(&self, user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
-        let sql = include_str!("../../sql/vehicle/by_user.sql");
-        Ok(self.connection.query(sql, &[&user_id, &page.skip(), &page.take()])?.multiple())
+    pub fn by_user(&self, target_user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
+        fillup.filter(user_id.eq(target_user_id))
+            .offset(page.offset())
+            .limit(page.limit())
+            .load(&*self.connection)
+            .multiple()
     }
 
-    fn by_vehicle(&self, vehicle_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
-        let sql = include_str!("../../sql/vehicle/by_user.sql");
-        Ok(self.connection.query(sql, &[&vehicle_id, &page.skip(), &page.take()])?.multiple())
+    pub fn by_vehicle(&self, target_vehicle_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
+        fillup.filter(vehicle_id.eq(target_vehicle_id))
+            .offset(page.offset())
+            .limit(page.limit())
+            .load(&*self.connection)
+            .multiple()
     }
 }
