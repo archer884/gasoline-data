@@ -15,24 +15,24 @@ impl Page {
         }
     }
 
-    pub fn skip(&self) -> i64 {
+    pub fn offset(&self) -> i64 {
         self.index * self.size
     }
 
-    pub fn take(&self) -> i64 {
+    pub fn limit(&self) -> i64 {
         self.size
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Page;
+    use service::Page;
     
     #[test]
     fn page_0_10() {
         let page = Page::new(0);
         
-        assert_eq!(0, page.skip());
-        assert_eq!(10, page.take());
+        assert_eq!(0, page.offset());
+        assert_eq!(10, page.limit());
     }
 }
