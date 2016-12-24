@@ -23,19 +23,19 @@ impl ConnectionService {
         ConnectionService { pool: pool }
     }
 
-    pub fn users(&mut self) -> UserService {
+    pub fn users(&self) -> UserService {
         UserService::new(self.get_connection())
     }
 
-    pub fn vehicles(&mut self) -> VehicleService {
+    pub fn vehicles(&self) -> VehicleService {
         VehicleService::new(self.get_connection())
     }
 
-    pub fn fillups(&mut self) -> FillupService {
+    pub fn fillups(&self) -> FillupService {
         FillupService::new(self.get_connection())
     }
 
-    fn get_connection(&mut self) -> ServiceConnection {
+    fn get_connection(&self) -> ServiceConnection {
         self.pool.get().expect("unable to get connection")
     }
 }
