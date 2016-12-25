@@ -1,9 +1,8 @@
 use diesel::pg::PgConnection;
-use std::env;
 use dotenv::dotenv;
-use iron::typemap;
 use r2d2::{Config, Pool};
 use service::{ConnectionManager, ServiceConnection, UserService, VehicleService, FillupService};
+use std::env;
 
 pub struct ConnectionService {
     pool: Pool<ConnectionManager<PgConnection>>,
@@ -38,8 +37,4 @@ impl ConnectionService {
     fn get_connection(&self) -> ServiceConnection {
         self.pool.get().expect("unable to get connection")
     }
-}
-
-impl typemap::Key for ConnectionService {
-    type Value = ConnectionService;
 }
