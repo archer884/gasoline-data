@@ -7,18 +7,21 @@ use std::fmt;
 
 mod connection;
 mod fillup;
-mod page;
 mod user;
 mod vehicle;
 
 pub use service::connection::ConnectionService;
 pub use service::fillup::FillupService;
-pub use service::page::Page;
 pub use service::user::UserService;
 pub use service::vehicle::VehicleService;
 
 pub type ServiceConnection = PooledConnection<ConnectionManager<PgConnection>>;
 pub type ServiceResult<T> = Result<T, ServiceError>;
+
+pub trait Paging {
+    fn offset(&self) -> i64;
+    fn limit(&self) -> i64;
+}
 
 #[derive(Debug)]
 pub enum ServiceError {

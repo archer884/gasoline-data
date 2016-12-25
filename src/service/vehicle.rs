@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use entity::Vehicle;
 use schema::vehicle::dsl::*;
-use service::{IntoModel, Page, ServiceConnection, ServiceResult};
+use service::{IntoModel, Paging, ServiceConnection, ServiceResult};
 
 pub struct VehicleService {
     connection: ServiceConnection
@@ -15,7 +15,7 @@ impl VehicleService {
         vehicle.filter(id.eq(target_id)).limit(1).load(&*self.connection).single()
     }
 
-    pub fn by_user(&self, target_user_id: i64, page: &Page) -> ServiceResult<Vec<Vehicle>> {
+    pub fn by_user<T: Paging>(&self, target_user_id: i64, page: &T) -> ServiceResult<Vec<Vehicle>> {
         vehicle.filter(user_id.eq(target_user_id))
             .offset(page.offset())
             .limit(page.limit())

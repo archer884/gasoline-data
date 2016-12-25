@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use entity::Fillup;
 use schema::fillup::dsl::*;
-use service::{IntoModel, Page, ServiceConnection, ServiceResult};
+use service::{IntoModel, Paging, ServiceConnection, ServiceResult};
 
 pub struct FillupService {
     connection: ServiceConnection
@@ -18,7 +18,7 @@ impl FillupService {
         fillup.filter(id.eq(target_id)).limit(1).load(&*self.connection).single()
     }
 
-    pub fn by_user(&self, target_user_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
+    pub fn by_user<T: Paging>(&self, target_user_id: i64, page: &T) -> ServiceResult<Vec<Fillup>> {
         fillup.filter(user_id.eq(target_user_id))
             .offset(page.offset())
             .limit(page.limit())
@@ -26,7 +26,7 @@ impl FillupService {
             .multiple()
     }
 
-    pub fn by_vehicle(&self, target_vehicle_id: i64, page: &Page) -> ServiceResult<Vec<Fillup>> {
+    pub fn by_vehicle<T: Paging>(&self, target_vehicle_id: i64, page: &T) -> ServiceResult<Vec<Fillup>> {
         fillup.filter(vehicle_id.eq(target_vehicle_id))
             .offset(page.offset())
             .limit(page.limit())
