@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use entity::Vehicle;
+use entity::{Vehicle, NewVehicle};
 use schema::vehicle::dsl::*;
 use service::{IntoModel, Paging, ServiceConnection, ServiceResult};
 
@@ -11,6 +11,14 @@ impl VehicleService {
     pub fn new(connection: ServiceConnection) -> VehicleService {
         VehicleService { connection: connection }
     }
+
+    pub fn add(&self, entity: &NewVehicle) -> ServiceResult<Vehicle> {
+        use diesel;
+        use schema::vehicle;
+
+        Ok(diesel::insert(entity).into(vehicle::table).get_result(&*self.connection)?)
+    }
+
     pub fn by_id(&self, target_id: i64) -> ServiceResult<Vehicle> {
         vehicle.filter(id.eq(target_id)).limit(1).load(&*self.connection).single()
     }
