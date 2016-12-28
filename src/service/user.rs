@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use schema::user::dsl::*;
-use entity::User;
+use entity::{User, NewUser};
 use service::{IntoModel, ServiceConnection, ServiceResult};
 
 pub struct UserService {
@@ -10,6 +10,13 @@ pub struct UserService {
 impl UserService {
     pub fn new(connection: ServiceConnection) -> UserService {
         UserService { connection: connection }
+    }
+
+    pub fn add(&self, entity: &NewUser) -> ServiceResult<User> {
+        use diesel;
+        use schema::user;
+
+        Ok(diesel::insert(entity).into(user::table).get_result(&*self.connection)?)
     }
     
     pub fn by_id(&self, target: i64) -> ServiceResult<User> {

@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use entity::Fillup;
+use entity::{Fillup, NewFillup};
 use schema::fillup::dsl::*;
 use service::{IntoModel, Paging, ServiceConnection, ServiceResult};
 
@@ -12,6 +12,13 @@ impl FillupService {
         FillupService {
             connection: connection
         }
+    }
+
+    pub fn add(&self, entity: &NewFillup) -> ServiceResult<Fillup> {
+        use diesel;
+        use schema::fillup;
+        
+        Ok(diesel::insert(entity).into(fillup::table).get_result(&*self.connection)?)
     }
 
     pub fn by_id(&self, target_id: i64) -> ServiceResult<Fillup> {
