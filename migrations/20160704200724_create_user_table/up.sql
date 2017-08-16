@@ -1,7 +1,7 @@
 create table "user" (
     id bigserial primary key,
     username varchar(240) not null,
-    hash varchar(240) not null
+    hash bytea not null
 );
 
 create unique index user_by_username on "user" (username);
