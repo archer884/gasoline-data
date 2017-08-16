@@ -4,12 +4,12 @@ use schema::user;
 pub struct User {
     pub id: i64,
     pub username: String,
-    pub hash: String,
+    pub hash: Vec<u8>,
 }
 
 #[derive(Insertable)]
 #[table_name="user"]
 pub struct NewUser<'a> {
     pub username: &'a str,
-    pub hash: &'a str,
+    pub hash: &'a [u8],
 }
