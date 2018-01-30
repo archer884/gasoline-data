@@ -1,7 +1,8 @@
-use diesel::pg::PgConnection;
+use diesel::PgConnection;
 use dotenv::dotenv;
-use r2d2::{Config, Pool};
-use service::{ConnectionManager, ServiceConnection, UserService, VehicleService, FillupService};
+use r2d2_diesel::ConnectionManager;
+use r2d2::Pool;
+use service::{ServiceConnection, UserService, VehicleService, FillupService};
 use std::env;
 
 pub struct ConnectionService {
@@ -13,11 +14,10 @@ impl ConnectionService {
         dotenv().ok();
 
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-        let pool = Pool::new(
-            Config::default(),
-            ConnectionManager::new(database_url.as_ref()),
-        ).expect("failed to initialize pool");
+        let manager = ConnectionManager::new(database_url);
+        let pool = Pool::builder()
+            .build(manager)
+            .expect("Failed to create connection pool.");
 
         ConnectionService { pool: pool }
     }

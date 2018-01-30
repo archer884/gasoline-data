@@ -10,10 +10,7 @@ extern crate r2d2;
 mod entity;
 mod service;
 
+pub mod schema;
+
 pub use entity::*;
 pub use service::*;
-
-// Must be public for `cargo doc`.
-pub mod schema {
-    infer_schema!("dotenv:DATABASE_URL");
-}

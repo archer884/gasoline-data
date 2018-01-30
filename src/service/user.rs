@@ -16,7 +16,7 @@ impl UserService {
         use diesel;
         use schema::user;
 
-        Ok(diesel::insert(entity).into(user::table).get_result(&*self.connection)?)
+        Ok(diesel::insert_into(user::table).values(entity).get_result(&*self.connection)?)
     }
     
     pub fn by_id(&self, target: i64) -> ServiceResult<User> {

@@ -18,7 +18,7 @@ impl FillupService {
         use diesel;
         use schema::fillup;
         
-        Ok(diesel::insert(entity).into(fillup::table).get_result(&*self.connection)?)
+        Ok(diesel::insert_into(fillup::table).values(entity).get_result(&*self.connection)?)
     }
 
     pub fn by_id(&self, target_id: i64) -> ServiceResult<Fillup> {

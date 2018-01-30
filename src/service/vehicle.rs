@@ -16,7 +16,7 @@ impl VehicleService {
         use diesel;
         use schema::vehicle;
 
-        Ok(diesel::insert(entity).into(vehicle::table).get_result(&*self.connection)?)
+        Ok(diesel::insert_into(vehicle::table).values(entity).get_result(&*self.connection)?)
     }
 
     pub fn by_id(&self, target_id: i64) -> ServiceResult<Vehicle> {
