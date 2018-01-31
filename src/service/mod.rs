@@ -37,9 +37,9 @@ impl From<DieselError> for ServiceError {
 
 impl fmt::Display for ServiceError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &ServiceError::NotFound => write!(f, "Not found"),
-            &ServiceError::Database(ref e) => write!(f, "Database failure: {:?}", e),
+        match *self {
+            ServiceError::NotFound => write!(f, "Not found"),
+            ServiceError::Database(ref e) => write!(f, "Database failure: {:?}", e),
         }
     }
 }

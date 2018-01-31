@@ -9,6 +9,12 @@ pub struct ConnectionService {
     pool: Pool<ConnectionManager<PgConnection>>,
 }
 
+impl Default for ConnectionService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ConnectionService {
     pub fn new() -> ConnectionService {
         dotenv().ok();
